@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  squid:
+    image: sameersbn/squid:3.5.27-2
+    ports:
+      - "3128:3128"
+    volumes:
+      - ./squid.conf:/etc/squid/squid.conf
+    restart: unless-stopped
+    command: >
+      bash -c "
+        apt-get update && apt-get install -y apache2-utils &&
+        htpasswd -b -c /etc/squid/passwd admin qwerty1234 &&
+        mkdir -p /var/spool/squid &&
+        chown -R proxy:proxy /var/spool/squid &&
+        squid -z &&
+        squid -NYCd 1
+      "
